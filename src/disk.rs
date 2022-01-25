@@ -5,6 +5,7 @@ use std::path::Path;
 
 use zerocopy::{AsBytes, FromBytes};
 
+// https://doc.rust-lang.org/std/primitive.usize.html
 pub const PAGE_SIZE: usize = 4096;
 
 // https://zenn.dev/mebiusbox/books/22d4c1ed9b0003/viewer/497a21#%F0%9F%93%8C-derive%E5%B1%9E%E6%80%A7
@@ -12,6 +13,7 @@ pub const PAGE_SIZE: usize = 4096;
 // https://doc.rust-jp.rs/rust-nomicon-ja/repr-rust.html
 // https://doc.rust-lang.org/nomicon/repr-rust.html
 #[repr(C)]
+// https://doc.rust-lang.org/std/primitive.u64.html
 pub struct PageId(pub u64);
 impl PageId {
     pub const INVALID_PAGE_ID: PageId = PageId(u64::MAX);
