@@ -1,4 +1,5 @@
 use std::convert::TryInto;
+// https://doc.rust-lang.org/std/fs/struct.OpenOptions.html
 use std::fs::{File, OpenOptions};
 use std::io::{self, prelude::*, SeekFrom};
 use std::path::Path;
@@ -52,7 +53,9 @@ impl From<&[u8]> for PageId {
     }
 }
 
+// heap file has many pages.
 pub struct DiskManager {
+  // file descriptor
   heap_file: File,
   next_page_id: u64,
 }
@@ -62,6 +65,8 @@ impl DiskManager {
       // ?演算子はErrをうけとったときに、関数の戻り値をErrにする
       // https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
       let heap_file_size = heap_file.metadata()?.len();
+
+      // 今保持しているファイルのサイズから次のページを決定する
       let next_page_id = heap_file_size / PAGE_SIZE as u64;
       Ok(Self {
           heap_file,
@@ -69,6 +74,7 @@ impl DiskManager {
       })
   }
 
+  // open heap file
   pub fn open(heap_file_path: impl AsRef<Path>) -> io::Result<Self> {
       let heap_file = OpenOptions::new()
           .read(true)
@@ -79,17 +85,21 @@ impl DiskManager {
   }
 
   pub fn read_page_data(&mut self, page_id: PageId, data: &mut [u8]) -> io::Result<()> {
+      // page id * page size
       let offset = PAGE_SIZE as u64 * page_id.to_u64();
       self.heap_file.seek(SeekFrom::Start(offset))?;
+      // write page data to data arg
       self.heap_file.read_exact(data)
   }
 
   pub fn write_page_data(&mut self, page_id: PageId, data: &[u8]) -> io::Result<()> {
       let offset = PAGE_SIZE as u64 * page_id.to_u64();
       self.heap_file.seek(SeekFrom::Start(offset))?;
+      // seek したデータをheap fileのページお に書き込む
       self.heap_file.write_all(data)
   }
 
+  // increament page id (add new page id)
   pub fn allocate_page(&mut self) -> PageId {
       let page_id = self.next_page_id;
       self.next_page_id += 1;
@@ -100,5 +110,39 @@ impl DiskManager {
       self.heap_file.flush()?;
       self.heap_file.sync_all()
   }
+}
+
+// unit test
+// 1. open file
+// 2. allocate new page
+// 3. write data
+// 4. read data
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::NamedTempFile;
+
+    #[test]
+    fn test() {
+        let (data_file, data_file_path) = NamedTempFile::new().unwrap().into_parts();
+        let mut disk = DiskManager::new(data_file).unwrap();
+        let mut hello = Vec::with_capacity(PAGE_SIZE);
+        hello.extend_from_slice(b"hello");
+        hello.resize(PAGE_SIZE, 0);
+        let hello_page_id = disk.allocate_page();
+        disk.write_page_data(hello_page_id, &hello).unwrap();
+        let mut world = Vec::with_capacity(PAGE_SIZE);
+        world.extend_from_slice(b"world");
+        world.resize(PAGE_SIZE, 0);
+        let world_page_id = disk.allocate_page();
+        disk.write_page_data(world_page_id, &world).unwrap();
+        drop(disk);
+        let mut disk2 = DiskManager::open(&data_file_path).unwrap();
+        let mut buf = vec![0; PAGE_SIZE];
+        disk2.read_page_data(hello_page_id, &mut buf).unwrap();
+        assert_eq!(hello, buf);
+        disk2.read_page_data(world_page_id, &mut buf).unwrap();
+        assert_eq!(world, buf);
+    }
 }
 
