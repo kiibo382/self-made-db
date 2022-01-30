@@ -74,7 +74,7 @@ impl BufferPool {
                 break self.next_victim_id;
             }
 
-            // 貸出中=frame.buffer がnone
+            // 貸出中=frame.buffer がnone(他の誰かが保持しているということ)
             // 貸し出し処理は fetch_page
             // 巡回中に貸し出し中でなければデクリメント
             if Rc::get_mut(&mut frame.buffer).is_some() {
@@ -129,27 +129,32 @@ impl BufferPoolManager {
     }
 
     pub fn fetch_page(&mut self, page_id: PageId) -> Result<Rc<Buffer>, Error> {
-        // page table に id あったらそのbuffer を返す
+        // page table に id があったらそのbuffer を貸し出す
         if let Some(&buffer_id) = self.page_table.get(&page_id) {
             let frame = &mut self.pool[buffer_id];
             frame.usage_count += 1;
             return Ok(Rc::clone(&frame.buffer));
         }
+
+        // 1. 捨てるバッファを決定
         let buffer_id = self.pool.evict().ok_or(Error::NoFreeBuffer)?;
         let frame = &mut self.pool[buffer_id];
         let evict_page_id = frame.buffer.page_id;
         {
             let buffer = Rc::get_mut(&mut frame.buffer).unwrap();
+            // 2. is_dirty(bufferの内容が古いことを示すフラグ) が true だったらdisk に書き込む
             if buffer.is_dirty.get() {
                 self.disk
                     .write_page_data(evict_page_id, buffer.page.get_mut())?;
             }
             buffer.page_id = page_id;
             buffer.is_dirty.set(false);
+            // 3. ページを読み出す
             self.disk.read_page_data(page_id, buffer.page.get_mut())?;
             frame.usage_count = 1;
         }
         let page = Rc::clone(&frame.buffer); asl
+        // 4. ページテーブルの更新
         self.page_table.remove(&evict_page_id);
         self.page_table.insert(page_id, buffer_id);
         Ok(page)
