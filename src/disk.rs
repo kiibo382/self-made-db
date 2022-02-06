@@ -9,7 +9,6 @@ use zerocopy::{AsBytes, FromBytes};
 // https://doc.rust-lang.org/std/primitive.usize.html
 pub const PAGE_SIZE: usize = 4096;
 
-// https://zenn.dev/mebiusbox/books/22d4c1ed9b0003/viewer/497a21#%F0%9F%93%8C-derive%E5%B1%9E%E6%80%A7
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, FromBytes, AsBytes)]
 // https://doc.rust-jp.rs/rust-nomicon-ja/repr-rust.html
 // https://doc.rust-lang.org/nomicon/repr-rust.html
@@ -33,7 +32,6 @@ impl PageId {
 }
 
 // traitごとに実装を分ける
-// ref: https://zenn.dev/mebiusbox/books/22d4c1ed9b0003/viewer/0e7a37#%F0%9F%93%8C-%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89
 impl Default for PageId {
     fn default() -> Self {
         Self::INVALID_PAGE_ID

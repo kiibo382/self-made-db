@@ -62,7 +62,7 @@ impl BufferPool {
         self.buffers.len()
     }
 
-    // clock-sweep
+    // clock-sweep (evict = force out)
     fn evict(&mut self) -> Option<BufferId> {
         let pool_size = self.size();
         let mut consecutive_pinned = 0;
@@ -153,7 +153,7 @@ impl BufferPoolManager {
             self.disk.read_page_data(page_id, buffer.page.get_mut())?;
             frame.usage_count = 1;
         }
-        let page = Rc::clone(&frame.buffer); asl
+        let page = Rc::clone(&frame.buffer);
         // 4. ページテーブルの更新
         self.page_table.remove(&evict_page_id);
         self.page_table.insert(page_id, buffer_id);
