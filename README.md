@@ -1,6 +1,6 @@
 # DB for ML
 
-## 既存ある機能
+## 実装済みの機能
 - table
   - create
 - row
