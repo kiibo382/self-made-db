@@ -1,4 +1,4 @@
-# DB for ML
+# 自作RDBMS
 
 ## 実装済みの機能
 - table
@@ -23,5 +23,5 @@
 - buffer
   - clock-sweep -> LRU cache
 
-## 構成
+## 処理フロー
 table -> buffer -> disk -> heap file -> page file
