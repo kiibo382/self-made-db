@@ -1,4 +1,3 @@
-// declare module (module name = file name)
 pub mod disk;
 mod bsearch;
 pub mod btree;
