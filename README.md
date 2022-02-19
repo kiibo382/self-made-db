@@ -1,11 +1,11 @@
-# 自作RDBMS
+# Self made RDBMS
 
-下記の2つの書籍を参考に実装。
+Implemented with reference to the following two books.
  - https://www.amazon.co.jp/exec/obidos/ASIN/B085DZM79S/hatena-blog-22/
  - https://gihyo.jp/magazine/wdpress/archive/2021/vol122
 
 
-## 実装済みの機能
+## Implemented features
 - disk & file
 - memory
   - buffer
@@ -18,20 +18,17 @@
 - simple query
 - index (btree)
 
-## 完成形
-- disk & file
+## Unimplemented features (Features to be added)
 - memory
   - buffer
     - LRU cache
     - Effective Buffer Utilization
 - table
   - mulitiple table
-  - create
   - update
   - read (show table)
   - join
 - row
-  - insert
   - update
   - delete
 - metadata manage
@@ -42,7 +39,6 @@
   - plan
   - optimize
 - transaction
-- index (btree)
 
-## 処理フロー
+## Processing Flow
 table -> buffer -> disk -> heap file -> page file
