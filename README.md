@@ -1,6 +1,6 @@
 # 自作RDBMS
 
-下記の2つを参考に実装。
+下記の2つの書籍を参考に実装。
  - https://www.amazon.co.jp/exec/obidos/ASIN/B085DZM79S/hatena-blog-22/
  - https://gihyo.jp/magazine/wdpress/archive/2021/vol122
 
@@ -11,7 +11,7 @@
 - row
   - insert
   - select
-- secondry index
+- index (btree)
 
 ## 完成形
 - exec sql
