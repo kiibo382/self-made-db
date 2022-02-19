@@ -6,15 +6,24 @@
 
 
 ## 実装済みの機能
+- disk & file
+- memory
+ - buffer
+  - clock-sweep
 - table
   - create
 - row
   - insert
   - select
+- simple query
 - index (btree)
 
 ## 完成形
-- exec sql
+- disk & file
+- memory
+ - buffer
+   - LRU cache
+   - Effective Buffer Utilization
 - table
   - mulitiple table
   - create
@@ -25,8 +34,15 @@
   - insert
   - update
   - delete
-- buffer
-  - clock-sweep -> LRU cache
+- metadata manage
+- query
+ - sql
+ - tokenize
+ - parse (LR(1))
+ - plan
+ - optimize
+- transaction
+- index (btree)
 
 ## 処理フロー
 table -> buffer -> disk -> heap file -> page file
