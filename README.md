@@ -8,8 +8,8 @@
 ## 実装済みの機能
 - disk & file
 - memory
- - buffer
-  - clock-sweep
+  - buffer
+    - clock-sweep
 - table
   - create
 - row
@@ -21,9 +21,9 @@
 ## 完成形
 - disk & file
 - memory
- - buffer
-   - LRU cache
-   - Effective Buffer Utilization
+  - buffer
+    - LRU cache
+    - Effective Buffer Utilization
 - table
   - mulitiple table
   - create
@@ -36,11 +36,11 @@
   - delete
 - metadata manage
 - query
- - sql
- - tokenize
- - parse (LR(1))
- - plan
- - optimize
+  - sql
+  - tokenize
+  - parse (LR(1))
+  - plan
+  - optimize
 - transaction
 - index (btree)
 
