@@ -1,19 +1,14 @@
 use std::convert::TryInto;
-// https://doc.rust-lang.org/std/fs/struct.OpenOptions.html
 use std::fs::{File, OpenOptions};
 use std::io::{self, prelude::*, SeekFrom};
 use std::path::Path;
 
 use zerocopy::{AsBytes, FromBytes};
 
-// https://doc.rust-lang.org/std/primitive.usize.html
 pub const PAGE_SIZE: usize = 4096;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, FromBytes, AsBytes)]
-// https://doc.rust-jp.rs/rust-nomicon-ja/repr-rust.html
-// https://doc.rust-lang.org/nomicon/repr-rust.html
 #[repr(C)]
-// https://doc.rust-lang.org/std/primitive.u64.html
 pub struct PageId(pub u64);
 impl PageId {
     pub const INVALID_PAGE_ID: PageId = PageId(u64::MAX);
@@ -32,6 +27,7 @@ impl PageId {
 }
 
 // traitごとに実装を分ける
+
 impl Default for PageId {
     fn default() -> Self {
         Self::INVALID_PAGE_ID
@@ -93,7 +89,7 @@ impl DiskManager {
   pub fn write_page_data(&mut self, page_id: PageId, data: &[u8]) -> io::Result<()> {
       let offset = PAGE_SIZE as u64 * page_id.to_u64();
       self.heap_file.seek(SeekFrom::Start(offset))?;
-      // seek したデータをheap fileのページお に書き込む
+      // seek したデータを heap file の page に書き込む
       self.heap_file.write_all(data)
   }
 
